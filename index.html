@@ -24,14 +24,13 @@
  <div class="auth-card">
   <div class="auth-logo"><div class="brand-mark">M</div><div><div class="brand-name" style="color:#172033">MASTER SEO CRM</div><div class="brand-sub" style="color:#929bad">AGENCY WORKSPACE</div></div></div>
   <h1 id="authTitle">Welcome back</h1><p id="authDesc">Sign in to your private agency workspace and manage your operations in one place.</p>
-  <div class="auth-tabs"><button id="loginTab" class="active" onclick="setAuthMode('login')">Sign in</button><button id="signupTab" onclick="setAuthMode('signup')">Create account</button></div>
+  
   <form id="authForm" class="auth-form">
-   <input id="authName" class="hidden" placeholder="Your full name" autocomplete="name">
    <input id="authEmail" type="email" placeholder="Email address" required autocomplete="email">
    <input id="authPassword" type="password" placeholder="Password (minimum 8 characters)" required minlength="8" autocomplete="current-password">
    <button id="authSubmit" class="btn primary" type="submit">Sign in to workspace</button>
   </form>
-  <p class="auth-note">Your data is protected by Supabase authentication and workspace-level database security.</p>
+  <p class="auth-note">Private owner access only. New team members can be added by the owner when team access is enabled.</p>
  </div>
 </div>
 <div id="appShell" class="shell hidden">
@@ -54,7 +53,8 @@
 const SUPABASE_URL='https://fjwsfuvqechdnogsmqyz.supabase.co';
 const SUPABASE_KEY='sb_publishable_OExw1qjaKFMV5HlyqhDTbA_QoOjQaXd';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let currentUser=null,workspaceId=null,workspaceName='Workspace',currentView='dashboard',currentRows=[],editing=null,authMode='login';
+let currentUser=null,workspaceId=null,workspaceName='Workspace',currentView='dashboard',currentRows=[],editing=null;
+const OWNER_EMAIL='seohassanali746@gmail.com';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pretty=s=>String(s).replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
@@ -97,9 +97,19 @@ documents:{title:'Documents',desc:'Document metadata registry. File storage uplo
 notifications:{title:'Notifications',desc:'Workspace reminders and operational notices.',fields:[['user_id','User ID','text',1],['title','Title','text',1],['body','Body','textarea'],['read_at','Read at','datetime-local'],['action_url','Action URL','url']]}
 };
 function toast(msg){$('toastRoot').innerHTML='<div class="toast">'+esc(msg)+'</div>';setTimeout(()=>$('toastRoot').innerHTML='',3400)}
-function setAuthMode(mode){authMode=mode;$('loginTab').classList.toggle('active',mode==='login');$('signupTab').classList.toggle('active',mode==='signup');$('authName').classList.toggle('hidden',mode!=='signup');$('authName').required=mode==='signup';$('authTitle').textContent=mode==='login'?'Welcome back':'Create your workspace';$('authDesc').textContent=mode==='login'?'Sign in to your private agency workspace and manage your operations in one place.':'Create your account. Your personal workspace will be provisioned automatically.';$('authSubmit').textContent=mode==='login'?'Sign in to workspace':'Create secure account'}
-window.setAuthMode=setAuthMode;
-$('authForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('authEmail').value.trim(),password=$('authPassword').value;const btn=$('authSubmit');btn.disabled=true;btn.textContent='Please wait…';try{if(authMode==='signup'){const name=$('authName').value.trim();const {data,error}=await db.auth.signUp({email,password,options:{data:{full_name:name}}});if(error)throw error;if(data.session){currentUser=data.user;await startApp()}else toast('Account created. Check your email to confirm, then sign in.')}else{const {data,error}=await db.auth.signInWithPassword({email,password});if(error)throw error;currentUser=data.user;await startApp()}}catch(err){toast(err.message||'Authentication failed')}finally{btn.disabled=false;btn.textContent=authMode==='login'?'Sign in to workspace':'Create secure account'}});
+$('authForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const email=$('authEmail').value.trim().toLowerCase(),password=$('authPassword').value;
+ const btn=$('authSubmit');
+ if(email!==OWNER_EMAIL){toast('This CRM is private. Only the owner account can sign in.');return}
+ btn.disabled=true;btn.textContent='Please wait…';
+ try{
+  const {data,error}=await db.auth.signInWithPassword({email,password});
+  if(error)throw error;
+  currentUser=data.user;await startApp();
+ }catch(err){toast(err.message||'Authentication failed')}
+ finally{btn.disabled=false;btn.textContent='Sign in to workspace'}
+});
 async function signOut(){await db.auth.signOut();currentUser=null;workspaceId=null;$('appShell').classList.add('hidden');$('authScreen').classList.remove('hidden')}
 window.signOut=signOut;
 async function startApp(){if(!currentUser)return;$('authScreen').classList.add('hidden');$('appShell').classList.remove('hidden');$('userAvatar').textContent=(currentUser.email||'M').slice(0,1).toUpperCase();$('workspaceLabel').textContent=currentUser.email||'Signed in';await loadWorkspace();buildNav();await renderDashboard()}
