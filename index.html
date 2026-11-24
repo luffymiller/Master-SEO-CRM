@@ -17,6 +17,36 @@
 @media(max-width:1050px){.sidebar{width:220px}.main{margin-left:220px}.content{padding:25px 22px}.topbar{padding:0 22px}.stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.sidebar{transform:translateX(-100%);transition:.2s;width:265px}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.mobile-toggle{display:inline-flex}.topbar{height:66px;padding:0 15px}.content{padding:22px 14px}.searchbox{display:none}.dashboard-grid{grid-template-columns:1fr}.welcome{align-items:flex-start;flex-direction:column}.stats{gap:9px}.stat{padding:14px}.stat-num{font-size:23px}.quick-grid{grid-template-columns:1fr 1fr}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.page-title{font-size:17px}}
 @media(max-width:390px){.stats{grid-template-columns:1fr 1fr}.quick-grid{grid-template-columns:1fr}.stat-num{font-size:21px}}
+
+/* Blogging Studio visual refresh */
+:root{--bg:#f5f7fc;--panel:#ffffff;--ink:#17243b;--muted:#78869c;--line:#e6ebf3;--nav:#101a2b;--nav2:#1a2940;--blue:#536ff0;--blue2:#eef2ff;--shadow:0 12px 34px rgba(22,38,68,.065)}
+body{background:linear-gradient(135deg,#f6f8fd 0%,#f1f4fa 100%);color:var(--ink)}
+.sidebar{width:260px;background:linear-gradient(180deg,#111d31 0%,#0c1524 100%);padding:25px 16px}
+.main{margin-left:260px}
+.brand{padding-bottom:30px}.brand-mark{box-shadow:0 8px 20px rgba(86,111,240,.28)}
+.nav button{padding:11px 13px;border-radius:10px;transition:background .18s ease,color .18s ease}
+.nav button.active{background:linear-gradient(100deg,#2d4266,#263956);box-shadow:inset 3px 0 #91a6ff}
+.topbar{background:rgba(255,255,255,.92);box-shadow:0 3px 18px rgba(20,35,60,.025)}
+.page-title{letter-spacing:-.55px}
+.content{padding-top:32px}
+.stat,.panel{border-radius:16px;box-shadow:var(--shadow);border-color:#e9edf4}
+.stat{padding:20px;transition:transform .18s ease,box-shadow .18s ease}
+.stat:hover{transform:translateY(-2px);box-shadow:0 15px 34px rgba(22,38,68,.09)}
+.stat-num{font-size:29px}
+.panel{padding:21px}
+.quick{border-radius:12px;transition:border-color .18s ease,transform .18s ease,background .18s ease}
+.quick:hover{transform:translateY(-2px);border-color:#b9c8fa;background:#fbfcff}
+.btn{border-radius:10px;transition:transform .15s ease,box-shadow .15s ease}
+.btn.primary{background:linear-gradient(135deg,#5c7bf4,#4b65df);box-shadow:0 6px 16px rgba(83,111,240,.22)}
+.btn.primary:hover{transform:translateY(-1px);box-shadow:0 9px 20px rgba(83,111,240,.28)}
+.table-wrap{border-radius:13px}
+th{background:#f7f9fd;color:#78869c}
+tbody tr:hover{background:#f7f9ff}
+.modal{border-radius:17px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#91a8fa;box-shadow:0 0 0 3px rgba(83,111,240,.10)}
+.site-filter{max-width:320px;background:#fbfcff}
+@media(max-width:1050px){.sidebar{width:220px}.main{margin-left:220px}}
+@media(max-width:760px){.sidebar{width:265px}.main{margin-left:0}.content{padding:22px 14px}}
 </style>
 </head>
 <body>
@@ -139,7 +169,8 @@ async function renderModule(table){const cfg=C[table];if(!cfg)return;currentView
 function drawTable(table,rows){const cfg=C[table],root=$('viewRoot');let cols=({websites:['website_code','name','domain','platform','niche'],content_categories:['name','website_id','slug','parent_id'],articles:['title','website_id','category_id','primary_keyword','status','target_publish_at'],keywords:['keyword','website_id','category_id','search_volume','keyword_difficulty','intent'],seo_audits:['title','website_id','audit_type','status','score','report_file_path'],seo_issues:['title','website_id','severity','category','status','evidence_file_path'],backlinks:['source_url','target_url','anchor_text','status','domain_rating'],publisher_sites:['domain','niche','domain_rating','traffic_estimate','price','currency','status'],outreach_campaigns:['name','website_id','campaign_type','status','start_date'],outreach_messages:['subject','campaign_id','publisher_id','channel','status','follow_up_at'],article_links:['article_id','target_url','anchor_text','link_kind']})[table]||cfg.fields.slice(0,5).map(f=>f[0]);
 let html='<div class="welcome"><div><div class="eyebrow">'+esc(activeWebsite?websiteName(activeWebsite):workspaceName)+'</div><div class="h1">'+esc(cfg.title)+'</div><div class="sub">'+esc(cfg.desc)+'</div></div><button class="btn primary" onclick="openForm(\''+table+'\')">＋ Add '+esc(table==='content_categories'?'niche':table==='websites'?'website':table==='articles'?'article':table==='keywords'?'keyword':cfg.title.replace(/s$/,''))+'</button></div><div class="module-toolbar"><div class="toolbar-left"><input id="tableSearch" class="filter-input" placeholder="Search records…"><span class="pill">'+rows.length+' records</span></div><div class="toolbar-right"><button class="btn small" onclick="exportCSV()">↓ Export CSV</button><button class="btn small" onclick="renderModule(\''+table+'\')">↻ Refresh</button></div></div><div class="table-wrap"><table><thead><tr>'+cols.map(c=>'<th>'+esc(c==='website_code'?'Website ID':pretty(c))+'</th>').join('')+'<th>Created</th><th>Actions</th></tr></thead><tbody id="tableBody">';
 if(!rows.length)html+='<tr><td colspan="'+(cols.length+2)+'"><div class="empty"><b>No records yet</b>Create your first record to get started.</div></td></tr>';else rows.forEach(r=>{html+='<tr data-row="'+r.id+'">'+cols.map(c=>'<td>'+(c==='website_code'?'<span class="pill">'+esc(r.website_code||r.id.slice(0,8))+'</span>':formatCell(c,r[c]))+'</td>').join('')+'<td>'+date(r.created_at)+'</td><td><div class="actions"><button class="icon-btn" onclick="editRecord(\''+table+'\',\''+r.id+'\')">Edit</button><button class="icon-btn" onclick="deleteRecord(\''+table+'\',\''+r.id+'\')">Delete</button></div></td></tr>'});html+='</tbody></table></div><div class="sub" style="margin-top:9px">Website relationships use dropdowns, not manually typed UUIDs. Select a website from the top bar to filter related records.</div>';if(table==='content_categories')html+='<div class="notice">Choose a website first. Parent category options are limited to that website.</div>';if(table==='outreach_campaigns')html+='<div class="notice">Campaign goals are for your own blog: Guest Post Outreach, Niche Edit, Resource Page Outreach, Broken Link Building, Digital PR and Brand Mention.</div>';if(table==='outreach_messages')html+='<div class="notice">Every message links to a campaign and publisher. This is your own blog’s outreach workflow, not client outreach.</div>';root.innerHTML=html;const search=$('tableSearch');search.addEventListener('input',()=>{$('tableBody').querySelectorAll('tr[data-row]').forEach(tr=>tr.classList.toggle('hidden',!tr.innerText.toLowerCase().includes(search.value.toLowerCase())))})}
-function formatCell(k,v){if(v==null||v==='')return '<span style="color:#b4bbc7">—</span>';if(k==='website_id'){const x=websitesCache.find(w=>w.id===v);return esc(x?x.name+' · '+x.domain:'—')}if(k==='category_id'||k==='parent_id'){const x=categoriesCache.find(c=>c.id===v);return esc(x?x.name:'—')}if(k==='campaign_id'){const x=campaignsCache.find(c=>c.id===v);return esc(x?x.name:'—')}if(k==='publisher_id'){const x=publishersCache.find(c=>c.id===v);return esc(x?x.domain:'—')}if(k==='article_id'){const x=articlesCache.find(c=>c.id===v);return esc(x?x.title:'—')}if(k==='status'||k==='severity')return '<span class="pill '+esc(String(v).toLowerCase())+'">'+esc(pretty(v))+'</span>';if(k.endsWith('_at')||k.endsWith('_date'))return esc(date(v));if(k.endsWith('_file_path'))return '<span class="pill">PDF attached</span>';return esc(v)}
+function formatCell(k,v){if(v==null||v==='')return '<span style="color:#b4bbc7">—</span>';if(k==='website_id'){const x=websitesCache.find(w=>w.id===v);return esc(x?x.name+' · '+x.domain:'—')}if(k==='category_id'||k==='parent_id'){const x=categoriesCache.find(c=>c.id===v);return esc(x?x.name:'—')}if(k==='campaign_id'){const x=campaignsCache.find(c=>c.id===v);return esc(x?x.name:'—')}if(k==='publisher_id'){const x=publishersCache.find(c=>c.id===v);return esc(x?x.domain:'—')}if(k==='article_id'){const x=articlesCache.find(c=>c.id===v);return esc(x?x.title:'—')}if(k==='status'||k==='severity')return '<span class="pill '+esc(String(v).toLowerCase())+'">'+esc(pretty(v))+'</span>';if(k.endsWith('_at')||k.endsWith('_date'))return esc(date(v));if(k.endsWith('_file_path'))return '<button class="icon-btn" onclick="openPdf(\''+esc(v)+'\')">Open PDF</button>';return esc(v)}
+async function openPdf(path){const w=window.open('about:blank','_blank');const {data,error}=await db.storage.from('seo-reports').createSignedUrl(path,60);if(error){if(w)w.close();toast(error.message);return}if(w)w.location.href=data.signedUrl;else toast('PDF link created. Please allow pop-ups for this site.')}window.openPdf=openPdf;
 function openForm(table=currentView,row=null){
 const cfg=C[table];if(!cfg)return;const isEdit=!!row;editing=row?row.id:null;const title=(row?'Edit ':'Add ')+cfg.title.replace(/s$/,'');
 function opts(list,value,label){return '<option value="">Select…</option>'+list.map(x=>'<option value="'+esc(value(x))+'">'+esc(label(x))+'</option>').join('')}
