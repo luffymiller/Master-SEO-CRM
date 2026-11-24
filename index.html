@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101827">
-<title>Master SEO CRM — Agency Command Center</title>
-<meta name="description" content="A unified workspace for SEO agency operations, client management, link building, finance and blogging workflows.">
+<title>Blogging Studio — Master SEO CRM</title>
+<meta name="description" content="A private blogging workspace for websites, niches, articles and SEO publishing.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,7 +22,7 @@
 <body>
 <div id="authScreen" class="auth-screen">
  <div class="auth-card">
-  <div class="auth-logo"><div class="brand-mark">M</div><div><div class="brand-name" style="color:#172033">MASTER SEO CRM</div><div class="brand-sub" style="color:#929bad">AGENCY WORKSPACE</div></div></div>
+  <div class="auth-logo"><div class="brand-mark">M</div><div><div class="brand-name" style="color:#172033">BLOGGING STUDIO</div><div class="brand-sub" style="color:#929bad">PRIVATE PUBLISHING WORKSPACE</div></div></div>
   <h1 id="authTitle">Welcome back</h1><p id="authDesc">Sign in to your private agency workspace and manage your operations in one place.</p>
   
   <form id="authForm" class="auth-form">
@@ -35,7 +35,7 @@
 </div>
 <div id="appShell" class="shell hidden">
  <aside id="sidebar" class="sidebar">
-  <div class="brand"><div class="brand-mark">M</div><div><div class="brand-name">MASTER SEO CRM</div><div class="brand-sub">Agency command center</div></div></div>
+  <div class="brand"><div class="brand-mark">M</div><div><div class="brand-name">MASTER SEO CRM</div><div class="brand-sub">Content command center</div></div></div>
   <div class="nav-label">Workspace</div><nav class="nav" id="mainNav">
    <button class="active" data-view="dashboard"><span class="nav-ico">▦</span>Overview</button>
   </nav>
@@ -62,12 +62,9 @@ const date=v=>v?new Date(v).toLocaleDateString(undefined,{year:'numeric',month:'
 const money=v=>v==null?'—':Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
 const iconMap={leads:'♙',clients:'♧',websites:'◎',projects:'▣',tasks:'✓',keywords:'⌕',keyword_rankings:'↗',seo_audits:'◉',seo_issues:'⚑',backlinks:'↗',publisher_sites:'▤',outreach_campaigns:'✉',outreach_messages:'➤',content_categories:'▧',articles:'▤',article_links:'↗',proposals:'▣',invoices:'▤',invoice_items:'≡',payments:'＄',expenses:'↘',activities:'◷',notes:'▤',documents:'▧',notifications:'♧'};
 const groups=[
- {title:'Agency CRM',items:[['leads','Leads & Prospects'],['clients','Clients'],['websites','Websites'],['projects','Projects'],['tasks','Tasks']]},
- {title:'SEO Operations',items:[['keywords','Keyword Research'],['keyword_rankings','Rank History'],['seo_audits','SEO Audits'],['seo_issues','SEO Issues']]},
- {title:'Link Building',items:[['backlinks','Backlinks'],['publisher_sites','Publisher Database'],['outreach_campaigns','Outreach Campaigns'],['outreach_messages','Outreach Messages']]},
- {title:'Blogging Studio',items:[['content_categories','Content Categories'],['articles','Articles & Calendar'],['article_links','Article Links']]},
- {title:'Business Finance',items:[['proposals','Proposals'],['invoices','Invoices'],['invoice_items','Invoice Items'],['payments','Payments'],['expenses','Expenses']]},
- {title:'Workspace',items:[['activities','Activity Log'],['notes','Notes'],['documents','Documents'],['notifications','Notifications']]}
+ {title:'Publishing',items:[['websites','Websites'],['content_categories','Niches & Categories'],['articles','Articles & Calendar'],['keywords','Keyword Research']]},
+ {title:'SEO Management',items:[['seo_audits','SEO Audits'],['seo_issues','SEO Issues'],['backlinks','Backlinks']]},
+ {title:'Link Building',items:[['publisher_sites','Publisher Database'],['outreach_campaigns','Outreach Campaigns'],['outreach_messages','Outreach Messages'],['article_links','Internal & External Links']]}
 ];
 const C={
 leads:{title:'Leads & Prospects',desc:'Track potential clients, deal stages and follow-ups.',fields:[['company_name','Company name','text',1],['contact_name','Contact person','text'],['email','Email','email'],['phone','Phone','text'],['website_url','Website URL','url'],['source','Lead source','text'],['stage','Stage','select',['new','contacted','qualified','proposal','negotiation','won','lost']],['estimated_value','Estimated value','number'],['currency','Currency','text'],['next_follow_up_at','Next follow-up','date'],['notes','Notes','textarea']]},
@@ -96,6 +93,19 @@ notes:{title:'Notes',desc:'Workspace notes linked to any record.',fields:[['enti
 documents:{title:'Documents',desc:'Document metadata registry. File storage upload can be connected separately.',fields:[['entity_type','Entity type','text'],['entity_id','Entity ID','text'],['file_name','File name','text',1],['storage_path','Storage path','text',1],['mime_type','MIME type','text'],['file_size','File size (bytes)','number']]},
 notifications:{title:'Notifications',desc:'Workspace reminders and operational notices.',fields:[['user_id','User ID','text',1],['title','Title','text',1],['body','Body','textarea'],['read_at','Read at','datetime-local'],['action_url','Action URL','url']]}
 };
+
+// Blogging-only forms and relationship fields.
+C.websites.fields=[['name','Website / blog name','text',1],['domain','Domain','text',1],['platform','Platform','select',['WordPress','Blogger','Ghost','Webflow','Custom','Other']],['niche','Main niche','text'],['country_code','Target country','select',['US','GB','CA','AU','PK','IN','AE','Other']],['timezone','Timezone','text'],['wordpress_site_id','Future WordPress site ID','text'],['integration_status','WordPress connection','select',['not_connected','planned','connected']]];
+C.content_categories={title:'Niches & Categories',desc:'Create website-specific niches and nested parent categories.',fields:[['website_id','Website','website',1],['name','Niche / category name','text',1],['slug','Slug','text'],['parent_id','Parent category','category']]};
+C.articles.fields=[['website_id','Website','website',1],['category_id','Niche / category','category'],['title','Article title','text',1],['slug','URL slug','text'],['primary_keyword','Primary keyword','text'],['secondary_keywords','Secondary keywords (comma separated)','textarea'],['meta_title','SEO title','text'],['meta_description','Meta description','textarea'],['content_type','Content type','select',['Blog Post','Guest Post','Pillar Page','Landing Page','News','Review','Guide','Other']],['author_name','Writer / author','text'],['editor_name','Editor','text'],['status','Workflow status','select',['idea','briefing','writing','editing','approved','scheduled','published','update_required','archived']],['word_count','Word count','number'],['target_publish_at','Target publish date','date'],['published_at','Published date','date'],['outline','Content brief / outline','textarea'],['content','Article content / draft','textarea'],['monetization_type','Monetization','select',['none','adsense','affiliate','sponsored','lead_generation','other']],['notes','Notes','textarea']];
+C.keywords.fields=[['website_id','Website','website',1],['category_id','Niche / category','category'],['keyword','Keyword','text',1],['country_code','Target country','select',['US','GB','CA','AU','PK','IN','AE','Other']],['search_engine','Search engine','select',['Google','Bing','Other']],['device','Device','select',['Desktop','Mobile','Both']],['search_volume','Search volume','number'],['keyword_difficulty','Keyword difficulty','number'],['cpc','CPC','number'],['intent','Search intent','select',['Informational','Navigational','Commercial','Transactional','Local']],['target_url','Target URL','url'],['tags','Tags (comma separated)','text']];
+C.seo_audits.fields=[['website_id','Website','website',1],['title','Audit title','text',1],['audit_type','Audit type','select',['Technical SEO','On-page SEO','Content Audit','Backlink Audit','Full Website Audit','Core Web Vitals','Other']],['status','Status','select',['planned','in_progress','completed','failed']],['score','SEO score','number'],['started_at','Started date','date'],['completed_at','Completed date','date'],['summary','Findings / summary','textarea'],['report_file','Upload audit PDF','file']];
+C.seo_issues.fields=[['website_id','Website','website',1],['title','Issue title','text',1],['description','Description / evidence','textarea'],['severity','Severity','select',['critical','high','medium','low','info']],['category','Issue category','select',['Technical SEO','On-page SEO','Content','Indexing','Internal Linking','Backlinks','Performance','Other']],['affected_url','Affected URL','url'],['recommended_fix','Recommended fix','textarea'],['status','Fix status','select',['open','in_progress','fixed','ignored']],['evidence_file','Upload supporting PDF','file']];
+C.backlinks.fields=[['website_id','Your website','website',1],['source_url','Linking page URL','url',1],['target_url','Your target URL','url',1],['anchor_text','Anchor text','text'],['link_type','Link type','select',['Guest Post','Niche Edit','Editorial','Directory','Profile','Forum','Resource Page','Other']],['status','Backlink status','select',['pending','indexing','indexed','rejected','live','lost','removed','not_indexed']],['domain_rating','Domain Rating (DR)','number'],['first_seen_at','First seen','date'],['last_checked_at','Last checked','date'],['notes','Notes','textarea']];
+C.publisher_sites.fields=[['domain','Publisher domain','text',1],['contact_name','Contact name','text'],['email','Contact email','email'],['niche','Niche','text'],['country_code','Country','select',['US','GB','CA','AU','PK','IN','AE','Other']],['domain_rating','Domain Rating (DR)','number'],['traffic_estimate','Monthly traffic','number'],['price','Guest post / link price','number'],['currency','Currency','select',['USD','GBP','EUR','PKR','CAD','AUD','AED','INR']],['accepts_guest_posts','Accepts guest posts','select',['true','false']],['status','Publisher status','select',['active','pending','rejected','blacklisted']],['notes','Notes','textarea']];
+C.outreach_campaigns.fields=[['website_id','Your website','website',1],['name','Campaign name','text',1],['campaign_type','Campaign goal','select',['Guest Post Outreach','Niche Edit / Link Insertion','Resource Page Outreach','Broken Link Building','Digital PR','Brand Mention','Editorial Backlinks','Other']],['status','Campaign status','select',['draft','active','paused','completed']],['start_date','Start date','date'],['end_date','End date','date']];
+C.outreach_messages.fields=[['campaign_id','Outreach campaign','campaign',1],['publisher_id','Publisher website','publisher'],['channel','Contact channel','select',['Email','Contact Form','LinkedIn','Other']],['subject','Email subject','text'],['body','Message / follow-up','textarea'],['status','Message status','select',['draft','sent','replied','follow_up','accepted','rejected','closed']],['sent_at','Sent date','date'],['replied_at','Reply date','date'],['follow_up_at','Follow-up date','date']];
+C.article_links.fields=[['article_id','Source article','article',1],['target_url','Destination URL','url',1],['anchor_text','Anchor text','text'],['link_kind','Link type','select',['internal','external','affiliate','sponsored']]];
 function toast(msg){$('toastRoot').innerHTML='<div class="toast">'+esc(msg)+'</div>';setTimeout(()=>$('toastRoot').innerHTML='',3400)}
 $('authForm').addEventListener('submit',async e=>{
  e.preventDefault();
