@@ -195,13 +195,14 @@ form.addEventListener('submit',async e=>{e.preventDefault();const btn=e.submitte
 const fd=new FormData(form),payload={workspace_id:workspaceId};
 cfg.fields.forEach(f=>{const n=f[0],v=fd.get(n);if(f[2]==='file'||v==null||String(v).trim()==='')return;let x=String(v).trim();if(f[2]==='number')x=Number(x);if(n==='secondary_keywords'||n==='tags')x=x.split(',').map(y=>y.trim()).filter(Boolean);if(n==='accepts_guest_posts')x=x==='true';payload[n]=x});
 if(table==='articles'&&!row){payload.wordpress_sync_status='not_connected';payload.secondary_keywords=payload.secondary_keywords||[];payload.status=payload.status||'idea'}
+if(table==='keywords'&&!row){payload.search_engine=payload.search_engine||'Google';payload.device=payload.device||'Desktop'}
 if(table==='websites'&&!row)payload.integration_status=payload.integration_status||'not_connected';
-if(table==='seo_audits'&&!row)payload.status=payload.status||'planned';
-if(table==='seo_issues'&&!row)payload.status=payload.status||'open';
+if(table==='seo_audits'&&!row){payload.status=payload.status||'planned';payload.audit_type=payload.audit_type||'Full Website Audit'}
+if(table==='seo_issues'&&!row){payload.status=payload.status||'open';payload.severity=payload.severity||'medium'}
 if(table==='backlinks'&&!row)payload.status=payload.status||'pending';
 if(table==='publisher_sites'&&!row)payload.status=payload.status||'active';
 if(table==='outreach_campaigns'&&!row)payload.status=payload.status||'draft';
-if(table==='outreach_messages'&&!row)payload.status=payload.status||'draft';
+if(table==='outreach_messages'&&!row){payload.status=payload.status||'draft';payload.channel=payload.channel||'Email'}
 let recordId=row?row.id:null;
 if(row){const r=await db.from(table).update(payload).eq('id',row.id).eq('workspace_id',workspaceId);if(r.error)throw r.error}
 else{const r=await db.from(table).insert(payload).select('id').single();if(r.error)throw r.error;recordId=r.data.id}
