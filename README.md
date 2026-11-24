@@ -1,26 +1,27 @@
 # Master SEO CRM
 
-A modular SEO agency and publishing operations platform.
+A single-file SEO agency and blogging operations CRM, powered by Supabase.
+
+## Live app
+GitHub Pages deploys automatically from the `main` branch after changes to `index.html`:
+https://luffymiller.github.io/Master-SEO-CRM/
+
+## Setup
+1. Open the live app and create an account.
+2. Confirm your email if Supabase email confirmation is enabled.
+3. Sign in. The database trigger provisions your personal workspace.
+4. Add clients, websites, projects, SEO records, publishers, articles and finance records.
 
 ## Stack
-- Next.js 15 + TypeScript
-- Tailwind CSS
+- One static `index.html` (HTML, CSS and JavaScript)
 - Supabase Auth + PostgreSQL + Row Level Security
-- Zod validation and Lucide icons
-
-## Local setup
-1. Install Node.js 20.9+.
-2. Run `npm install`.
-3. Copy `.env.example` to `.env.local` and add the Supabase project URL and publishable key.
-4. Run `npm run dev`.
+- Supabase JS v2 loaded from jsDelivr CDN
+- GitHub Pages deployment through GitHub Actions
 
 ## Security
-Never put a Supabase service-role/secret key in browser code or a `NEXT_PUBLIC_*` variable. Database access is protected by workspace membership RLS. A first Auth signup automatically provisions a personal workspace and owner membership.
+The browser contains only the Supabase publishable key. Never add a service-role or secret key to this repository. Workspace data is protected by database Row Level Security. Keep the repository public only while it contains no private credentials or customer information.
 
-## Modules
-Agency CRM, clients, websites, projects, tasks, keyword tracking, audits, backlinks, publisher/outreach CRM, blogging/content operations, proposals, invoicing, payments, expenses, activity history and notifications.
+## Included modules
+Leads, clients, websites, projects, tasks, keywords, ranking history, SEO audits and issues, backlinks, publisher sites, outreach campaigns and messages, content categories, articles, article links, proposals, invoices, invoice items, payments, expenses, activities, notes, document metadata and notifications.
 
-WordPress fields are reserved for a future integration. Google Search Console and Google Analytics integrations are intentionally out of scope for this build.
-
-## Database
-The initial schema is provisioned in the dedicated Supabase project. Keep future schema changes in versioned migrations under `supabase/migrations`.
+WordPress integration is reserved for later. Google Search Console and Google Analytics are intentionally out of scope.
